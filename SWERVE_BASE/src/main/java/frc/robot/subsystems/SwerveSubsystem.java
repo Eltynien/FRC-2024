@@ -20,6 +20,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.DriveTrainConstants;
 import edu.wpi.first.wpilibj.ADXRS450_Gyro;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class SwerveSubsystem extends SubsystemBase {
@@ -90,7 +91,7 @@ public class SwerveSubsystem extends SubsystemBase {
               Math.sqrt(Math.pow(DriveTrainConstants.kTrackWidth, 2) + Math.pow(DriveTrainConstants.kWheelBase, 2)), 
               new ReplanningConfig() // Default path replanning config. See the API for the options here
       ),
-      () -> {return DriverStation.getAlliance().equals(DriverStation.Alliance.Red);}, // return if need to flip path
+      () -> {return DriverStation.getAlliance().get() == Alliance.Red;}, // return if need to flip path
       this // Reference to this subsystem to set requirements
     );
   }

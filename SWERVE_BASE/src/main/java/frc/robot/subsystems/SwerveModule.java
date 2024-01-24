@@ -1,8 +1,9 @@
 package frc.robot.subsystems;
 
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
-import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
-import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
+import com.ctre.phoenix.motorcontrol.TalonSRXControlMode;
+import com.ctre.phoenix.motorcontrol.can.TalonSRX;
+import com.ctre.phoenix6.hardware.TalonFX;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -14,8 +15,8 @@ import frc.robot.Constants.DriveTrainConstants;
 public class SwerveModule {
 
     // motors
-    private final WPI_TalonFX driveMotor;
-    private final WPI_TalonSRX turnMotor;
+    private final TalonFX driveMotor;
+    private final TalonSRX turnMotor;
 
     // pid for motors
     private final PIDController turningPIDController;
@@ -25,17 +26,17 @@ public class SwerveModule {
     private final double absoluteEncoderOffset;
     private final boolean absoluteEncoderReversed;
 
+
     public SwerveModule(int driveMotorId, int turnMotorId, boolean driveMotorReversed, boolean turnMotorReversed, double absoluteEncoderOffset, boolean absoluteEncoderReversed){
         // offsets if needed
         this.absoluteEncoderOffset = absoluteEncoderOffset;
         this.absoluteEncoderReversed = absoluteEncoderReversed;
         
         // initialize motors with provided ids
-        this.driveMotor = new WPI_TalonFX(driveMotorId);
-        this.turnMotor = new WPI_TalonSRX(turnMotorId);
+        this.driveMotor = new TalonFX(driveMotorId);
+        this.turnMotor = new TalonSRX(turnMotorId);
 
         // set everything to default values
-        this.driveMotor.configFactoryDefault();
         this.turnMotor.configFactoryDefault();
 
         // set inverted if needed
@@ -46,7 +47,7 @@ public class SwerveModule {
         this.turnMotor.configSelectedFeedbackSensor(FeedbackDevice.PulseWidthEncodedPosition, 0, 10);
 
         // drive motor uses integrated sensor
-        this.driveMotor.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor, 0, 10);
+        //this.driveMotor.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor, 0, 10);
 
         // pid controller
         turningPIDController = new PIDController(DriveTrainConstants.kPTurning, DriveTrainConstants.kITurning, DriveTrainConstants.kDTurning);
@@ -67,11 +68,11 @@ public class SwerveModule {
     }
 
     public double getDrivePosition() {
-        return driveMotor.getSelectedSensorPosition() * DriveTrainConstants.kDriveEncoderToMeters;
+        return driveMotor.getPosition().getValueAsDouble() * DriveTrainConstants.kDriveEncoderToMeters;
     }
 
     public double getDriveVelocity() {
-        return driveMotor.getSelectedSensorVelocity() * DriveTrainConstants.kDriveEncoderToMeters;
+        return driveMotor.getPosition().getValueAsDouble() * DriveTrainConstants.kDriveEncoderToMeters;
     }
 
     public double getTurnVelocity() {
@@ -82,7 +83,7 @@ public class SwerveModule {
 
     public void stop() {
         driveMotor.set(0);
-        turnMotor.set(0);
+        turnMotor.set(TalonSRXControlMode.Velocity, 0);
     }
 
     // swervemodulestate format
@@ -112,7 +113,7 @@ public class SwerveModule {
 
 
         driveMotor.set(calculatedDriveSpeed);
-        turnMotor.set(calculatedTurnSpeed);
+        turnMotor.set(TalonSRXControlMode.Velocity, calculatedTurnSpeed);
         
         SmartDashboard.putString("Swerve[" + driveMotor.getDeviceID() + "] desired state:", "Speed: " + Double.toString(state.speedMetersPerSecond) + ", Angle: " + Double.toString(state.angle.getDegrees()));
     }
