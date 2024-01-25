@@ -18,10 +18,13 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.DriveTrainConstants;
-import edu.wpi.first.wpilibj.ADXRS450_Gyro;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+
+import com.kauailabs.navx.frc.AHRS;
+
 
 public class SwerveSubsystem extends SubsystemBase {
 
@@ -61,7 +64,7 @@ public class SwerveSubsystem extends SubsystemBase {
     DriveTrainConstants.kBackRightAbsoluteEncoderReversed
   );
 
-  private ADXRS450_Gyro gyroscope = new ADXRS450_Gyro(); 
+  private final AHRS gyroscope = new AHRS(SPI.Port.kMXP); 
 
   private final SwerveDriveOdometry odometer = new SwerveDriveOdometry(
     DriveTrainConstants.kDriveKinematics, 
