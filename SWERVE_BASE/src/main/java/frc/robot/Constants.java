@@ -70,8 +70,8 @@ public final class Constants {
     public static double kEncoderResolution= 4096.0;
 
     // conversion factors
-    public static double kTurnEncoderToRad= 2 * Math.PI /4096; //* kTurnGearRatio;
-    public static double kDriveEncoderToMeters = 1 / 4096 * Math.PI * 2 * kWheelRadius * kDriveGearRatio;
+    public static double kTurnEncoderToRad= 2 * Math.PI /kEncoderResolution; //* kTurnGearRatio;
+    public static double kDriveEncoderToMeters = Math.PI * 2 * kWheelRadius * kDriveGearRatio;
   
     // pid for the swerve modules
     public static double kPTurning = 0.5;
