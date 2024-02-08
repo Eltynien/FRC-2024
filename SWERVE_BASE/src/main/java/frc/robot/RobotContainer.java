@@ -6,10 +6,10 @@ package frc.robot;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 
-import edu.wpi.first.wpilibj.PS4Controller;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.button.CommandPS4Controller;
 import frc.robot.Constants.OIConstants;
 import frc.robot.commands.SwerveJoystickCommand;
 import frc.robot.subsystems.SwerveSubsystem;
@@ -18,7 +18,7 @@ import frc.robot.subsystems.SwerveSubsystem;
 public class RobotContainer {
   // The robot's subsystems and commands are defined here...
   private final SwerveSubsystem swerveSubsystem = new SwerveSubsystem();
-  private final PS4Controller driverJoystick = new PS4Controller(OIConstants.kDriverControllerPort);
+  private final CommandPS4Controller driverJoystick = new CommandPS4Controller(OIConstants.kDriverControllerPort);
   private final SendableChooser<Command> autoChooser;
   
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
@@ -40,6 +40,8 @@ public class RobotContainer {
 
 
   private void configureBindings() {
+    //driverJoystick.circle().whileTrue(new RaiseArmToAngle(45, arm));
+
   }
 
   /**

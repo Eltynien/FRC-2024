@@ -85,7 +85,7 @@ public class SwerveModule {
 
     public void stop() {
         driveMotor.set(0);
-        turnMotor.set(ControlMode.Velocity,0);
+        turnMotor.set(ControlMode.PercentOutput,0);
     }
 
     // swervemodulestate format
@@ -108,20 +108,16 @@ public class SwerveModule {
 
         double calculatedDriveSpeed = speedPIDController.calculate(getDriveVelocity(), state.speedMetersPerSecond);
         double calculatedTurnSpeed = turningPIDController.calculate(getTurningPositionRadians(), state.angle.getRadians());
-        
-
-        SmartDashboard.putNumber("Swerve[" + driveMotor.getDeviceID() + "] calculated drive speed:", calculatedDriveSpeed);
-        SmartDashboard.putNumber("Swerve[" + driveMotor.getDeviceID() + "] calculated turn speed:", calculatedTurnSpeed);
-
 
         driveMotor.set(calculatedDriveSpeed);
-        turnMotor.set(TalonSRXControlMode.Velocity, calculatedTurnSpeed);
+        turnMotor.set(TalonSRXControlMode.PercentOutput, calculatedTurnSpeed);
         
-        SmartDashboard.putString("Swerve[" + driveMotor.getDeviceID() + "] desired state:", "Speed: " + Double.toString(state.speedMetersPerSecond) + ", Angle: " + Double.toString(state.angle.getDegrees()));
+        SmartDashboard.putNumber("Desired Angle[" +  driveMotor.getDeviceID() + "]", state.angle.getDegrees());
+        SmartDashboard.putNumber("Desired Speed[" +  driveMotor.getDeviceID() + "]", state.speedMetersPerSecond);
     }
 
     public void showDebugInfo(){
-        SmartDashboard.putString("Swerve[" + driveMotor.getDeviceID() + "] sensor outputs:",  "Speed: " + Double.toString(driveMotor.getPosition().getValueAsDouble()) + ", Angle: " + Double.toString(turnMotor.getSelectedSensorPosition()));
-        SmartDashboard.putString("Swerve[" + driveMotor.getDeviceID() + "] actual state:",  "Speed: " + Double.toString(getState().speedMetersPerSecond) + ", Angle: " + Double.toString(getState().angle.getDegrees()));
+        SmartDashboard.putNumber("Actual Angle[" +  driveMotor.getDeviceID() + "]", getState().angle.getDegrees());
+        SmartDashboard.putNumber("Actual Speed[" +  driveMotor.getDeviceID() + "]", getState().speedMetersPerSecond);
     }
 }

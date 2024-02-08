@@ -21,6 +21,15 @@ public final class Constants {
     public static int kDriverControllerPort = 0;
     public static double kDeadband = 0.05;
   }
+  public static class ArmConstants {
+    public static int kArmMotorPort = 0;
+    public static int Kp = 1;
+    public static int Ki = 0;
+    public static int Kd = 0;
+    public static int armEncoderArm2 = 3;
+    public static int armEncoderArm1 = 2;
+    public static double encoderToAngle = 360/4096;
+  }
 
   public static class DriveTrainConstants {
 
@@ -35,7 +44,7 @@ public final class Constants {
     public static int kFrontRightDriveMotorID = 2;
     public static int kFrontRightTurnMotorID = 6;
     public static boolean kFrontRightAbsoluteEncoderReversed = false;
-    public static double kFrontRightAbsoluteEncoderOffset = 0;
+    public static double kFrontRightAbsoluteEncoderOffset = 629;
     public static boolean kFrontRightDriveMotorReversed = true;
     public static boolean kFrontRightTurnMotorReversed = false;
 
@@ -48,8 +57,8 @@ public final class Constants {
 
     public static int kBackRightDriveMotorID = 4;
     public static int kBackRightTurnMotorID = 8;
-    public static boolean kBackRightAbsoluteEncoderReversed = false; // absolute encoder does not work
-    public static double kBackRightAbsoluteEncoderOffset = 618; // absolute encoder does not seem to work
+    public static boolean kBackRightAbsoluteEncoderReversed = false;
+    public static double kBackRightAbsoluteEncoderOffset = 618;
     public static boolean kBackRightDriveMotorReversed = true;
     public static boolean kBackRightTurnMotorReversed = false;
 
@@ -70,11 +79,11 @@ public final class Constants {
     public static double kEncoderResolution= 4096.0;
 
     // conversion factors
-    public static double kTurnEncoderToRad= 2 * Math.PI /kEncoderResolution; //* kTurnGearRatio;
-    public static double kDriveEncoderToMeters = Math.PI * 2 * kWheelRadius * kDriveGearRatio;
+    public static double kTurnEncoderToRad= 2 * Math.PI /4096; //* kTurnGearRatio;
+    public static double kDriveEncoderToMeters = 1 / 4096 * Math.PI * 2 * kWheelRadius * kDriveGearRatio;
   
     // pid for the swerve modules
-    public static double kPTurning = 0.5;
+    public static double kPTurning = 0.2;
     public static double kITurning = 0;
     public static double kDTurning = 0;
 
