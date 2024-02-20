@@ -10,14 +10,18 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandPS4Controller;
+import frc.robot.Constants.ArmConstants;
 import frc.robot.Constants.OIConstants;
+import frc.robot.commands.SetArmAngle;
 import frc.robot.commands.SwerveJoystickCommand;
+import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.SwerveSubsystem;
 
 
 public class RobotContainer {
   // The robot's subsystems and commands are defined here...
   private final SwerveSubsystem swerveSubsystem = new SwerveSubsystem();
+  private final Arm armSubsystem = new Arm();
   private final CommandPS4Controller driverJoystick = new CommandPS4Controller(OIConstants.kDriverControllerPort);
   private final SendableChooser<Command> autoChooser;
   
@@ -40,8 +44,12 @@ public class RobotContainer {
 
 
   private void configureBindings() {
-    //driverJoystick.circle().whileTrue(new RaiseArmToAngle(45, arm));
-
+    // button to raise arm
+    driverJoystick.triangle().whileTrue(new SetArmAngle(armSubsystem, armSubsystem.getAngle() + 1));
+    // button to lower arm
+    driverJoystick.cross().whileTrue(new SetArmAngle(armSubsystem, armSubsystem.getAngle() + 1));
+    // example button to set to a given angle
+    driverJoystick.circle().whileTrue(new SetArmAngle(armSubsystem, ArmConstants.shootingAngle));
   }
 
   /**

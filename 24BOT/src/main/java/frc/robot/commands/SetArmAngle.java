@@ -15,8 +15,13 @@ public class SetArmAngle extends Command {
   private final PIDController pid = new PIDController(ArmConstants.Kp, ArmConstants.Ki, ArmConstants.Kd);
 
   /** Creates a new SetArmAngle. */
-  public SetArmAngle(int angle, Arm arm) {
-    // Use addRequirements() here to declare subsystem dependencies.
+  public SetArmAngle(Arm arm, double angle) {
+    if (angle >= ArmConstants.maxAngle){
+      angle = ArmConstants.maxAngle;
+    }
+    else if (angle <= ArmConstants.minAngle){
+      angle = ArmConstants.minAngle;
+    }
     this.angle = angle;
     this.arm = arm;
 
