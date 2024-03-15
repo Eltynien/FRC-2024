@@ -22,13 +22,25 @@ public final class Constants {
     public static double kDeadband = 0.05;
   }
   public static class ArmConstants {
-    public static int kArmMotorPort = 0;
+    public static int kArmMotorID1 = 0;
+    public static int kArmMotorID2 = 1;
     public static int Kp = 1;
     public static int Ki = 0;
     public static int Kd = 0;
-    public static int armEncoderArm2 = 3;
-    public static int armEncoderArm1 = 2;
-    public static double encoderToAngle = 360/4096;
+    public static int armEncoderPort1 = 3;
+    public static int armEncoderPort2 = 2;
+    public static double encoderToAngle = 360/4096 * 1/81;
+    public static double minAngle = 0;
+    public static double maxAngle = 90;
+
+    public static double shootingAngle = 45;
+  }
+
+    public static class IntakeConstants {
+    public static int kIntakeMotorPort1 = 9;
+    public static int kIntakeMotorPort2 = 10 ;
+    public static boolean kMotor1Inverted = true;
+    public static boolean kMotor2Inverted = false;
   }
 
   public static class DriveTrainConstants {
