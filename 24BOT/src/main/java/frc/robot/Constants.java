@@ -36,9 +36,11 @@ public final class Constants {
     public static double shootingAngle = 45;
   }
 
-    public static class ShooterConstants {
-    public static int kShooterMotorPort1 = 0;
-    public static int kShooterMotorPort2 = 0 ;
+    public static class IntakeConstants {
+    public static int kIntakeMotorPort1 = 9;
+    public static int kIntakeMotorPort2 = 10 ;
+    public static boolean kMotor1Inverted = true;
+    public static boolean kMotor2Inverted = false;
   }
 
   public static class DriveTrainConstants {
