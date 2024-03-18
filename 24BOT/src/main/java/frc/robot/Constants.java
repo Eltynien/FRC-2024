@@ -43,6 +43,15 @@ public final class Constants {
     public static boolean kMotor2Inverted = false;
   }
 
+  public static class ShooterConstants {
+    public static double kP = 1;
+    public static double kI = 0;
+    public static double kD = 0;
+    
+    public static int kShooterMotorOneId = 4;
+    public static int kShooterMotorTwoId = 3;
+  }
+
   public static class DriveTrainConstants {
 
     // swerve module intialization information
