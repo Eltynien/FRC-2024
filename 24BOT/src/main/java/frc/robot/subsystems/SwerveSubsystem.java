@@ -5,7 +5,6 @@
 package frc.robot.subsystems;
 
 import com.pathplanner.lib.auto.AutoBuilder;
-import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 import com.pathplanner.lib.util.PIDConstants;
 import com.pathplanner.lib.util.ReplanningConfig;
@@ -22,8 +21,6 @@ import frc.robot.Constants.DriveTrainConstants;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-
-import java.util.Optional;
 
 import com.kauailabs.navx.frc.AHRS;
 
@@ -68,8 +65,6 @@ public class SwerveSubsystem extends SubsystemBase {
 
   private final AHRS gyroscope = new AHRS(SPI.Port.kMXP); 
 
-  private final LimeLight limelight;
-
   private final SwerveDriveOdometry odometer = new SwerveDriveOdometry(
     DriveTrainConstants.kDriveKinematics, 
     gyroscope.getRotation2d(),
@@ -82,9 +77,8 @@ public class SwerveSubsystem extends SubsystemBase {
   );
   
   /** Creates a new SwerveSubsystem. */
-  public SwerveSubsystem(LimeLight limelight) {
+  public SwerveSubsystem() {
 
-    this.limelight = limelight;
     gyroscope.reset();
 
     AutoBuilder.configureHolonomic(
@@ -109,7 +103,6 @@ public class SwerveSubsystem extends SubsystemBase {
       this // Reference to this subsystem to set requirements
     );
 
-    PPHolonomicDriveController.setRotationTargetOverride(this::getRotationTargetOverride);
   }
 
   public double getHeading() {
@@ -156,17 +149,6 @@ public class SwerveSubsystem extends SubsystemBase {
       frontLeft.getPosition(), frontRight.getPosition(),
       backLeft.getPosition(), backRight.getPosition()
     }, pose);
-  }
-
-  public Optional<Rotation2d> getRotationTargetOverride(){
-    // Some condition that should decide if we want to override rotation
-    if(limelight.isTargetAvailable()) {
-        // Return an optional containing the rotation override (this should be a field relative rotation)
-        return Optional.of(Rotation2d.fromDegrees(limelight.getTargetOffsetX()));
-    } else {
-        // return an empty optional when we don't want to override the path's rotation
-        return Optional.empty();
-    }
   }
 
   @Override

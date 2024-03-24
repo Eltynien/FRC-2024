@@ -5,6 +5,7 @@
 package frc.robot;
 
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.auto.NamedCommands;
 
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -26,7 +27,7 @@ import frc.robot.subsystems.SwerveSubsystem;
 public class RobotContainer {
   // The robot's subsystems and commands are defined here...
   private final LimeLight limelightSubsystem = new LimeLight();
-  private final SwerveSubsystem swerveSubsystem = new SwerveSubsystem(limelightSubsystem);
+  private final SwerveSubsystem swerveSubsystem = new SwerveSubsystem();
   private final Arm armSubsystem = new Arm();
   private final Intake intakeSubsystem = new Intake();
   private final Shooter shooterSubsystem = new Shooter();
@@ -48,13 +49,12 @@ public class RobotContainer {
       ));
 
     // register named commands with the autonomous builder
-    /*
-     *  NamedCommands.registerCommand("SetArmAngle", new SetArmAngle(armSubsystem, limelightSubsystem));
+  
+    NamedCommands.registerCommand("SetArmAngle", new SetArmAngle(armSubsystem, limelightSubsystem));
     NamedCommands.registerCommand("SetIntakeIn", new SetIntake(intakeSubsystem, false));
     NamedCommands.registerCommand("SetIntakeOut", new SetIntake(intakeSubsystem, true));
     NamedCommands.registerCommand("Shoot", new Shoot(shooterSubsystem));
     
-     */
    
     configureBindings();
 

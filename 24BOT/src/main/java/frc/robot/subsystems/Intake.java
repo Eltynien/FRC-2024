@@ -21,8 +21,8 @@ public class Intake extends SubsystemBase {
   }
 
   public void setMotor(double voltage){
-    sparkMotor1.setVoltage(voltage);
-    sparkMotor2.setVoltage(-voltage);
+    sparkMotor1.setVoltage(-voltage);
+    sparkMotor2.setVoltage(voltage);
   }
 
   @Override
