@@ -17,39 +17,21 @@ import edu.wpi.first.math.util.Units;
  * constants are needed, to reduce verbosity.
  */
 public final class Constants {
+
   public static class OIConstants {
     public static int kDriverControllerPort = 0;
     public static double kDeadband = 0.05;
   }
-  public static class ArmConstants {
-    public static int kArmMotorID1 = 0;
-    public static int kArmMotorID2 = 1;
-    public static int Kp = 1;
-    public static int Ki = 0;
-    public static int Kd = 0;
-    public static int armEncoderPort1 = 3;
-    public static int armEncoderPort2 = 2;
-    public static double encoderToAngle = 360/4096 * 1/81;
-    public static double minAngle = 0;
-    public static double maxAngle = 90;
+  
+  public static class LimelightConstants {
+    // how many degrees back is your limelight rotated from perfectly vertical?
+    public static double limelightMountAngleDegrees = 25.0; 
 
-    public static double shootingAngle = 45;
-  }
+    // distance from the center of the Limelight lens to the floor
+    public static double limelightLensHeightInches = 20.0; 
 
-    public static class IntakeConstants {
-    public static int kIntakeMotorPort1 = 9;
-    public static int kIntakeMotorPort2 = 10 ;
-    public static boolean kMotor1Inverted = true;
-    public static boolean kMotor2Inverted = false;
-  }
-
-  public static class ShooterConstants {
-    public static double kP = 1;
-    public static double kI = 0;
-    public static double kD = 0;
-    
-    public static int kShooterMotorOneId = 4;
-    public static int kShooterMotorTwoId = 3;
+    // distance from the target to the floor
+    public static double goalHeightInches = 60.0; 
   }
 
   public static class DriveTrainConstants {
@@ -129,4 +111,36 @@ public final class Constants {
     public static final double kDriveMaxAngularAcceleration = kPhysicalMaxAngularVelocity/4;
     public static final double kDesiredMaxSpeed = kPhysicalMaxVelocity / 4;
   }
+  
+  public static class ArmConstants {
+    public static int kArmMotorID1 = 9;
+    public static int kArmMotorID2 = 10;
+    public static int Kp = 1;
+    public static int Ki = 0;
+    public static int Kd = 0;
+    public static int armEncoderPort1 = 3;
+    public static int armEncoderPort2 = 2;
+    public static double encoderToAngle = 360/8192;
+    public static double minAngle = 0;
+    public static double maxAngle = 90;
+
+    public static double shootingAngle = 45;
+  }
+
+    public static class IntakeConstants {
+    public static int kIntakeMotorPort1 = 11;
+    public static int kIntakeMotorPort2 = 12;
+    public static boolean kMotor1Inverted = false;
+    public static boolean kMotor2Inverted = false;
+  }
+
+  public static class ShooterConstants {
+    public static double kP = 1;
+    public static double kI = 0;
+    public static double kD = 0;
+    
+    public static int kShooterMotorOneId = 13;
+    public static int kShooterMotorTwoId = 14;
+  }
+
 }

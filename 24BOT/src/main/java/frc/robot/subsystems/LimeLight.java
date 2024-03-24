@@ -7,6 +7,7 @@
 package frc.robot.subsystems;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants.LimelightConstants;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
@@ -56,12 +57,12 @@ public class LimeLight extends SubsystemBase {
 
   }
 
-  private LimeLight() {
+  public LimeLight() {
     table = NetworkTableInstance.getDefault().getTable("limelight");
     tx = table.getEntry("tx");
     ty = table.getEntry("ty");
     tv = table.getEntry("tv");
-    ta = table.getEntry("tx");
+    ta = table.getEntry("ta");
     ledMode = table.getEntry("ledMode");
 
   }
@@ -85,6 +86,19 @@ public class LimeLight extends SubsystemBase {
   private void setLEDMode(LEDMode mode) {
     ledMode.setNumber(mode.modeValue);
 
+  }
+
+  public double getDistance(){
+    NetworkTable table = NetworkTableInstance.getDefault().getTable("limelight");
+    NetworkTableEntry ty = table.getEntry("ty");
+    double targetOffsetAngle_Vertical = ty.getDouble(0.0);
+
+
+    double angleToGoalDegrees = LimelightConstants.limelightMountAngleDegrees + targetOffsetAngle_Vertical;
+    double angleToGoalRadians = angleToGoalDegrees * (3.14159 / 180.0);
+
+    //calculate distance
+    return (LimelightConstants.goalHeightInches - LimelightConstants.limelightLensHeightInches) / Math.tan(angleToGoalRadians);
   }
 
   public void turnOffLED() {
@@ -125,6 +139,29 @@ public class LimeLight extends SubsystemBase {
 	
 		return ledMode.getDouble(0.0) == LEDMode.ON.modeValue && camMode.getDouble(0.0) == CamMode.VISION.modeValue;
 	}
+
+  public double aim_proportional()
+  {    
+    // tx ranges from (-hfov/2) to (hfov/2) in degrees. If your target is on the rightmost edge of 
+    // your limelight 3 feed, tx should return roughly 31 degrees.
+    double targetingAngularVelocity = getTargetOffsetX() * Math.PI/180;
+
+    //invert since tx is positive when the target is to the right of the crosshair
+    targetingAngularVelocity *= -1.0;
+
+    return targetingAngularVelocity;
+  }
+
+  // simple proportional ranging control with Limelight's "ty" value
+  // this works best if your Limelight's mount height and target mount height are different.
+  // if your limelight and target are mounted at the same or similar heights, use "ta" (area) for target ranging rather than "ty"
+  public double range_proportional()
+  {    
+    double targetingForwardSpeed = getTargetOffsetY();
+    targetingForwardSpeed *= -1.0;
+    return targetingForwardSpeed;
+  }
+
 
 	//now we will use them to create a method that toggles between modes
 	

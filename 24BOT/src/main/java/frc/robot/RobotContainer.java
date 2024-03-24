@@ -10,21 +10,26 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandPS4Controller;
-import frc.robot.Constants.ArmConstants;
 import frc.robot.Constants.OIConstants;
+import frc.robot.commands.SetArm;
 import frc.robot.commands.SetArmAngle;
 import frc.robot.commands.SetIntake;
+import frc.robot.commands.Shoot;
 import frc.robot.commands.SwerveJoystickCommand;
 import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.Intake;
+import frc.robot.subsystems.LimeLight;
+import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.SwerveSubsystem;
 
 
 public class RobotContainer {
   // The robot's subsystems and commands are defined here...
-  private final SwerveSubsystem swerveSubsystem = new SwerveSubsystem();
+  private final LimeLight limelightSubsystem = new LimeLight();
+  private final SwerveSubsystem swerveSubsystem = new SwerveSubsystem(limelightSubsystem);
   private final Arm armSubsystem = new Arm();
   private final Intake intakeSubsystem = new Intake();
+  private final Shooter shooterSubsystem = new Shooter();
   private final CommandPS4Controller driverJoystick = new CommandPS4Controller(OIConstants.kDriverControllerPort);
   private final SendableChooser<Command> autoChooser;
   
@@ -35,27 +40,48 @@ public class RobotContainer {
     swerveSubsystem.setDefaultCommand(
       new SwerveJoystickCommand(
         swerveSubsystem,
-        () -> driverJoystick.getRightY(),
+        limelightSubsystem,
+        () -> -driverJoystick.getLeftY(),
+        () -> driverJoystick.getLeftX(),
         () -> -driverJoystick.getRightX(),
-        () -> driverJoystick.getLeftX()
+        () -> driverJoystick.getL2Axis()
       ));
 
+    // register named commands with the autonomous builder
+    /*
+     *  NamedCommands.registerCommand("SetArmAngle", new SetArmAngle(armSubsystem, limelightSubsystem));
+    NamedCommands.registerCommand("SetIntakeIn", new SetIntake(intakeSubsystem, false));
+    NamedCommands.registerCommand("SetIntakeOut", new SetIntake(intakeSubsystem, true));
+    NamedCommands.registerCommand("Shoot", new Shoot(shooterSubsystem));
+    
+     */
+   
     configureBindings();
 
     autoChooser = AutoBuilder.buildAutoChooser();
+    SmartDashboard.putData(autoChooser);
   }
 
 
   private void configureBindings() {
     // button to raise arm
-    driverJoystick.triangle().whileTrue(new SetArmAngle(armSubsystem, armSubsystem.getAngle() + 1));
+    driverJoystick.L1().whileTrue(new SetArm(armSubsystem, false));
+
     // button to lower arm
-    driverJoystick.cross().whileTrue(new SetArmAngle(armSubsystem, armSubsystem.getAngle() - 1));
-    // example button to set to a given angle
-    driverJoystick.circle().whileTrue(new SetArmAngle(armSubsystem, ArmConstants.shootingAngle));
+    driverJoystick.L2().whileTrue(new SetArm(armSubsystem, true));
+
+    // example button to set to a given angle/towards any detected target
+    //driverJoystick.square().whileTrue(new SetArmAngle(armSubsystem, limelightSubsystem));
+    driverJoystick.square().onTrue(new SetArmAngle(armSubsystem, 45));
+
     // button to turn on the intake
-    driverJoystick.circle().whileTrue(new SetIntake(intakeSubsystem, false));
-    driverJoystick.cross().whileTrue(new SetIntake(intakeSubsystem, true));
+    driverJoystick.R1().whileTrue(new SetIntake(intakeSubsystem, false));
+
+    // button to reverse the intake
+    driverJoystick.R2().whileTrue(new SetIntake(intakeSubsystem, true));
+    
+    //button to shoot
+    driverJoystick.circle().whileTrue(new Shoot(shooterSubsystem));
   }
 
   /**

@@ -16,20 +16,13 @@ public class Intake extends SubsystemBase {
  
 /** Creates a new Intake. */
   public Intake() {
-    sparkMotor1.setInverted(IntakeConstants.kMotor1Inverted);
-    sparkMotor2.setInverted(IntakeConstants.kMotor2Inverted);
+    //sparkMotor1.setInverted(IntakeConstants.kMotor1Inverted);
+    //sparkMotor2.setInverted(IntakeConstants.kMotor2Inverted);
   }
 
   public void setMotor(double voltage){
     sparkMotor1.setVoltage(voltage);
-    sparkMotor2.setVoltage(voltage);
-  }
-
-  public void invertMotor(boolean isInverted){
-    if (isInverted){
-      sparkMotor1.setInverted(!IntakeConstants.kMotor1Inverted);
-      sparkMotor2.setInverted(!IntakeConstants.kMotor2Inverted);
-    }
+    sparkMotor2.setVoltage(-voltage);
   }
 
   @Override

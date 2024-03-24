@@ -14,14 +14,17 @@ import frc.robot.Constants.ShooterConstants;
 spin the same way at the same time on the press of a button, pid for speed */
 public class Shooter extends SubsystemBase{
 
-    // ADD ENCODER AND WAY TO READ ENCODER VALUES
     private final TalonFX motorOne = new TalonFX(ShooterConstants.kShooterMotorOneId);
     private final TalonFX motorTwo = new TalonFX(ShooterConstants.kShooterMotorTwoId);
 
     public Shooter() {}
 
+    public double getEncoderPosition(){
+        return (motorOne.getPosition().getValue() + motorTwo.getPosition().getValue())/2;
+    }
+
     public void setMotors(double speed){
-        motorOne.set(speed);
+        motorOne.set(-speed);
         motorTwo.set(speed);
     }
 }

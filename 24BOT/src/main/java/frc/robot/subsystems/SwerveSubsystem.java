@@ -5,6 +5,7 @@
 package frc.robot.subsystems;
 
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 import com.pathplanner.lib.util.PIDConstants;
 import com.pathplanner.lib.util.ReplanningConfig;
@@ -19,9 +20,10 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.DriveTrainConstants;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+
+import java.util.Optional;
 
 import com.kauailabs.navx.frc.AHRS;
 
@@ -66,6 +68,8 @@ public class SwerveSubsystem extends SubsystemBase {
 
   private final AHRS gyroscope = new AHRS(SPI.Port.kMXP); 
 
+  private final LimeLight limelight;
+
   private final SwerveDriveOdometry odometer = new SwerveDriveOdometry(
     DriveTrainConstants.kDriveKinematics, 
     gyroscope.getRotation2d(),
@@ -78,8 +82,9 @@ public class SwerveSubsystem extends SubsystemBase {
   );
   
   /** Creates a new SwerveSubsystem. */
-  public SwerveSubsystem() {
+  public SwerveSubsystem(LimeLight limelight) {
 
+    this.limelight = limelight;
     gyroscope.reset();
 
     AutoBuilder.configureHolonomic(
@@ -94,13 +99,21 @@ public class SwerveSubsystem extends SubsystemBase {
               Math.sqrt(Math.pow(DriveTrainConstants.kTrackWidth, 2) + Math.pow(DriveTrainConstants.kWheelBase, 2)), 
               new ReplanningConfig() // Default path replanning config. See the API for the options here
       ),
-      () -> {return DriverStation.getAlliance().get() == Alliance.Red;}, // return if need to flip path
+      () -> {
+        var alliance = DriverStation.getAlliance();
+        if (alliance.isPresent()) {
+          return alliance.get() == DriverStation.Alliance.Red;
+        }
+        return false;
+      }, // return if need to flip path
       this // Reference to this subsystem to set requirements
     );
+
+    PPHolonomicDriveController.setRotationTargetOverride(this::getRotationTargetOverride);
   }
 
   public double getHeading() {
-    return (Math.IEEEremainder(gyroscope.getAngle(), 360));
+    return (Math.IEEEremainder(gyroscope.getAngle(), 360) - 90);
   }
 
   public Rotation2d getRotation2d(){
@@ -143,6 +156,17 @@ public class SwerveSubsystem extends SubsystemBase {
       frontLeft.getPosition(), frontRight.getPosition(),
       backLeft.getPosition(), backRight.getPosition()
     }, pose);
+  }
+
+  public Optional<Rotation2d> getRotationTargetOverride(){
+    // Some condition that should decide if we want to override rotation
+    if(limelight.isTargetAvailable()) {
+        // Return an optional containing the rotation override (this should be a field relative rotation)
+        return Optional.of(Rotation2d.fromDegrees(limelight.getTargetOffsetX()));
+    } else {
+        // return an empty optional when we don't want to override the path's rotation
+        return Optional.empty();
+    }
   }
 
   @Override

@@ -9,17 +9,23 @@ import frc.robot.subsystems.Intake;
 
 public class SetIntake extends Command {
   private Intake intake;
+  private boolean reverse;
   /** Creates a new SetIntake. */
   public SetIntake(Intake intake, boolean reverse) {
     this.intake = intake;
-    intake.invertMotor(reverse);
+    this.reverse = reverse;
     addRequirements(intake);  
 }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    intake.setMotor(10);
+    if (reverse){
+      intake.setMotor(-7);
+    }
+    else{
+      intake.setMotor(7);
+    }
   }
 
   // Called every time the scheduler runs while the command is scheduled.

@@ -12,21 +12,25 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants.DriveTrainConstants;
 import frc.robot.Constants.OIConstants;
+import frc.robot.subsystems.LimeLight;
 import frc.robot.subsystems.SwerveSubsystem;
 
 public class SwerveJoystickCommand extends Command {
   /** Creates a new SwerveJoystickCommand. */
   private final SwerveSubsystem swerveSubsystem;
-  private final Supplier<Double> xSpdFunction, ySpdFunction, turningSpdFunction;
+  private final LimeLight limelight;
+  private final Supplier<Double> xSpdFunction, ySpdFunction, turningSpdFunction, limelightControl;
 
   private final SlewRateLimiter xLimiter, yLimiter, turningLimiter;
 
-  public SwerveJoystickCommand(SwerveSubsystem swerveSubsystem, Supplier<Double> xSpdFunction, Supplier<Double> ySpdFunction, Supplier<Double> turningSpdFunction) {
+  public SwerveJoystickCommand(SwerveSubsystem swerveSubsystem, LimeLight limelight, Supplier<Double> xSpdFunction, Supplier<Double> ySpdFunction, Supplier<Double> turningSpdFunction, Supplier<Double> limelightControl) {
  // Use addRequirements() here to declare subsystem dependencies.
     this.swerveSubsystem = swerveSubsystem;
+    this.limelight = limelight;
     this.xSpdFunction = xSpdFunction;
     this.ySpdFunction = ySpdFunction;
     this.turningSpdFunction = turningSpdFunction;
+    this.limelightControl = limelightControl;
 
     this.xLimiter = new SlewRateLimiter(DriveTrainConstants.kDriveMaxAcceleration);
     this.yLimiter = new SlewRateLimiter(DriveTrainConstants.kDriveMaxAcceleration);
@@ -46,6 +50,7 @@ public class SwerveJoystickCommand extends Command {
     double xSpeed = xSpdFunction.get();
     double ySpeed = ySpdFunction.get();
     double turningSpeed = turningSpdFunction.get();
+    boolean fieldRelative = true;
 
     SmartDashboard.putNumber("x joystick input", xSpeed);
     SmartDashboard.putNumber("y joystick input", ySpeed);
@@ -65,12 +70,22 @@ public class SwerveJoystickCommand extends Command {
     SmartDashboard.putNumber("resultant yspeed", ySpeed);
     SmartDashboard.putNumber("resultant turning speed", turningSpeed);
 
+    if (limelightControl.get() > 0.01){
+        turningSpeed = limelight.aim_proportional();;
+        xSpeed = limelight.range_proportional();
+
+        //while using Limelight, turn off field-relative driving.
+        fieldRelative = false;
+    }
+
     // convert to chassis speeds
     ChassisSpeeds chassisSpeeds;
     
     chassisSpeeds = new ChassisSpeeds(xSpeed, ySpeed, turningSpeed);
-    //chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(xSpeed, ySpeed, turningSpeed, swerveSubsystem.getRotation2d());
 
+    if (fieldRelative){
+      chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(xSpeed, ySpeed, turningSpeed, swerveSubsystem.getRotation2d());
+    }
     swerveSubsystem.setChassisSpeeds(chassisSpeeds);    
 
   }

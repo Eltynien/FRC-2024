@@ -7,8 +7,8 @@ import frc.robot.subsystems.Shooter;
 
 public class Shoot extends Command {
     private final PIDController pid = new PIDController(ShooterConstants.kP, ShooterConstants.kI, ShooterConstants.kD);
-
     private Shooter shooter;
+
     public Shoot(Shooter shooter){
         this.shooter = shooter;
         addRequirements(shooter);
@@ -19,13 +19,13 @@ public class Shoot extends Command {
 
     @Override
     public void execute(){
-        // FIX PID - ADD ENCODER READING AND DESIRED SETPOINT
-        shooter.setMotors(pid.calculate(1));
+        shooter.setMotors(pid.calculate(5.0, shooter.getEncoderPosition()));
+
     }
 
     @Override
     public void end(boolean interrupted){
-        this.shooter.setMotors(0);
+        shooter.setMotors(0);
     }
 
     @Override
