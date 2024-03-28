@@ -11,6 +11,7 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants.DriveTrainConstants;
+import frc.robot.Constants.LimelightConstants;
 import frc.robot.Constants.OIConstants;
 import frc.robot.subsystems.LimeLight;
 import frc.robot.subsystems.SwerveSubsystem;
@@ -18,19 +19,18 @@ import frc.robot.subsystems.SwerveSubsystem;
 public class SwerveJoystickCommand extends Command {
   /** Creates a new SwerveJoystickCommand. */
   private final SwerveSubsystem swerveSubsystem;
-  private final LimeLight limelight;
-  private final Supplier<Double> xSpdFunction, ySpdFunction, turningSpdFunction, limelightControl;
-
+  private final LimeLight limeLight;
+  private final Supplier<Double> xSpdFunction, ySpdFunction, turningSpdFunction, limelightFunction;
   private final SlewRateLimiter xLimiter, yLimiter, turningLimiter;
 
-  public SwerveJoystickCommand(SwerveSubsystem swerveSubsystem, LimeLight limelight, Supplier<Double> xSpdFunction, Supplier<Double> ySpdFunction, Supplier<Double> turningSpdFunction, Supplier<Double> limelightControl) {
+  public SwerveJoystickCommand(SwerveSubsystem swerveSubsystem, LimeLight limeLight, Supplier<Double> xSpdFunction, Supplier<Double> ySpdFunction, Supplier<Double> turningSpdFunction, Supplier<Double> limelightFunction) {
  // Use addRequirements() here to declare subsystem dependencies.
     this.swerveSubsystem = swerveSubsystem;
-    this.limelight = limelight;
+    this.limeLight = limeLight;
     this.xSpdFunction = xSpdFunction;
     this.ySpdFunction = ySpdFunction;
     this.turningSpdFunction = turningSpdFunction;
-    this.limelightControl = limelightControl;
+    this.limelightFunction = limelightFunction;
 
     this.xLimiter = new SlewRateLimiter(DriveTrainConstants.kDriveMaxAcceleration);
     this.yLimiter = new SlewRateLimiter(DriveTrainConstants.kDriveMaxAcceleration);
@@ -51,32 +51,24 @@ public class SwerveJoystickCommand extends Command {
     double ySpeed = ySpdFunction.get();
     double turningSpeed = turningSpdFunction.get();
     boolean fieldRelative = true;
-
-    SmartDashboard.putNumber("x joystick input", xSpeed);
-    SmartDashboard.putNumber("y joystick input", ySpeed);
-    SmartDashboard.putNumber("turning joystick input", turningSpeed);
   
     // apply deadband
     xSpeed = Math.abs(xSpeed) > OIConstants.kDeadband ? xSpeed : 0.0;
     ySpeed = Math.abs(ySpeed) > OIConstants.kDeadband ? ySpeed : 0.0;
     turningSpeed = Math.abs(turningSpeed) > OIConstants.kDeadband ? turningSpeed : 0.0;
 
+
     // rate limit
-    xSpeed = xLimiter.calculate(xSpeed) * DriveTrainConstants.kDesiredMaxSpeed/4;
-    ySpeed = yLimiter.calculate(ySpeed)* DriveTrainConstants.kDesiredMaxSpeed/4;
+    xSpeed = xLimiter.calculate(xSpeed) * DriveTrainConstants.kDesiredMaxSpeed;
+    ySpeed = yLimiter.calculate(ySpeed) * DriveTrainConstants.kDesiredMaxSpeed;
     turningSpeed = turningLimiter.calculate(turningSpeed) * DriveTrainConstants.kDriveMaxAngularAcceleration;
 
-    SmartDashboard.putNumber("resultant xspeed", xSpeed);
-    SmartDashboard.putNumber("resultant yspeed", ySpeed);
-    SmartDashboard.putNumber("resultant turning speed", turningSpeed);
 
-    if (limelightControl.get() > 0.01){
-        turningSpeed = limelight.aim_proportional();;
-        xSpeed = limelight.range_proportional();
-
-        //while using Limelight, turn off field-relative driving.
-        fieldRelative = false;
+     // limelight
+    if (limelightFunction.get() > 0){
+      turningSpeed = - limeLight.getTargetOffsetX() * LimelightConstants.kP * DriveTrainConstants.kDriveMaxAngularAcceleration;
     }
+    SmartDashboard.putBoolean("Limelight Active", limelightFunction.get() > 0);
 
     // convert to chassis speeds
     ChassisSpeeds chassisSpeeds;

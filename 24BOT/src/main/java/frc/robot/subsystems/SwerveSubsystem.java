@@ -20,6 +20,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.DriveTrainConstants;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.SPI;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import com.kauailabs.navx.frc.AHRS;
@@ -62,6 +63,8 @@ public class SwerveSubsystem extends SubsystemBase {
     DriveTrainConstants.kBackRightAbsoluteEncoderOffset,
     DriveTrainConstants.kBackRightAbsoluteEncoderReversed
   );
+  
+  private final Field2d field = new Field2d();
 
   private final AHRS gyroscope = new AHRS(SPI.Port.kMXP); 
 
@@ -78,6 +81,8 @@ public class SwerveSubsystem extends SubsystemBase {
   
   /** Creates a new SwerveSubsystem. */
   public SwerveSubsystem() {
+
+    SmartDashboard.putData("Field", field);
 
     gyroscope.reset();
 
@@ -106,11 +111,15 @@ public class SwerveSubsystem extends SubsystemBase {
   }
 
   public double getHeading() {
-    return (Math.IEEEremainder(gyroscope.getAngle(), 360) - 90);
+    return (Math.IEEEremainder(-gyroscope.getAngle(), 360));
   }
 
   public Rotation2d getRotation2d(){
     return Rotation2d.fromDegrees(getHeading());
+  }
+
+  public void resetGyroscope(){
+    gyroscope.reset();
   }
 
   public void stopModules() {
@@ -146,8 +155,8 @@ public class SwerveSubsystem extends SubsystemBase {
 
   public void resetOdometry (Pose2d pose) {
     odometer.resetPosition(getRotation2d(), new SwerveModulePosition[] {
-      frontLeft.getPosition(), frontRight.getPosition(),
-      backLeft.getPosition(), backRight.getPosition()
+      frontLeft.getPositionOdometry(), frontRight.getPositionOdometry(),
+      backLeft.getPositionOdometry(), backRight.getPositionOdometry()
     }, pose);
   }
 
@@ -155,13 +164,15 @@ public class SwerveSubsystem extends SubsystemBase {
   public void periodic() {
     // This method will be called once per scheduler run
     odometer.update(getRotation2d(), new SwerveModulePosition[] {
-      frontLeft.getPosition(), frontRight.getPosition(),
-      backLeft.getPosition(), backRight.getPosition()
+      frontLeft.getPositionOdometry(), frontRight.getPositionOdometry(),
+      backLeft.getPositionOdometry(), backRight.getPositionOdometry()
     });
 
 
-    SmartDashboard.putNumber("Gyro angle", getHeading());
-    SmartDashboard.putBoolean("Gyro status", gyroscope.isConnected());
+    SmartDashboard.putNumber("Gyro Angle", getHeading());
+
+    // Do this in either robot periodic or subsystem periodic
+    field.setRobotPose(odometer.getPoseMeters());
 
     frontLeft.showDebugInfo();
     frontRight.showDebugInfo();

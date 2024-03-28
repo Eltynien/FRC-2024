@@ -8,10 +8,10 @@ package frc.robot.subsystems;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.LimelightConstants;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 
 public class LimeLight extends SubsystemBase {
@@ -98,7 +98,7 @@ public class LimeLight extends SubsystemBase {
     double angleToGoalRadians = angleToGoalDegrees * (3.14159 / 180.0);
 
     //calculate distance
-    return (LimelightConstants.goalHeightInches - LimelightConstants.limelightLensHeightInches) / Math.tan(angleToGoalRadians);
+    return (LimelightConstants.goalHeightMeters - LimelightConstants.limelightLensHeightMeters) / Math.tan(angleToGoalRadians);
   }
 
   public void turnOffLED() {
@@ -180,12 +180,12 @@ public class LimeLight extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-    NetworkTable table = NetworkTableInstance.getDefault().getTable("limelight");
     tx = table.getEntry("tx");
     ty = table.getEntry("ty");
     ta = table.getEntry("ta");
     tv = table.getEntry("tv");
     //read values periodically
+
     double x = tx.getDouble(0.0);
     double y = ty.getDouble(0.0);
     double area = ta.getDouble(0.0);
@@ -193,5 +193,10 @@ public class LimeLight extends SubsystemBase {
     SmartDashboard.putNumber("LimelightX", x);
     SmartDashboard.putNumber("LimelightY", y);
     SmartDashboard.putNumber("LimelightArea", area);
+    SmartDashboard.putNumber("Limelight Distance", getDistance());
+    SmartDashboard.putNumber("Limelight Angle", (90 + getTargetOffsetY() - LimelightConstants.limelightMountAngleDegrees) % 90);
+
+
+     
   }
 }

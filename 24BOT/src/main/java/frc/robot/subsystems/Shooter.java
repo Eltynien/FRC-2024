@@ -17,14 +17,21 @@ public class Shooter extends SubsystemBase{
     private final TalonFX motorOne = new TalonFX(ShooterConstants.kShooterMotorOneId);
     private final TalonFX motorTwo = new TalonFX(ShooterConstants.kShooterMotorTwoId);
 
-    public Shooter() {}
-
-    public double getEncoderPosition(){
-        return (motorOne.getPosition().getValue() + motorTwo.getPosition().getValue())/2;
+    public Shooter() {
+        //TODO #7 set shooters to go constantly
     }
 
-    public void setMotors(double speed){
-        motorOne.set(-speed);
-        motorTwo.set(speed);
+    public double getEncoderVelocity(){
+        return (motorOne.getVelocity().getValue() + -motorTwo.getVelocity().getValue())/2;
+    }
+
+    public void setMotors(double voltage){
+        if (voltage > 12) voltage = 12;
+        motorOne.setVoltage(voltage);
+        motorTwo.setVoltage(-voltage);
+    }
+
+    public void periodic() {
+    
     }
 }

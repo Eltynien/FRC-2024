@@ -6,6 +6,7 @@ package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants.ArmConstants;
+import frc.robot.Constants.LimelightConstants;
 import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.LimeLight;
 
@@ -23,7 +24,7 @@ public class SetArmAngle extends Command {
 
   public SetArmAngle(Arm arm, LimeLight limelight) {
     if (limelight.isTargetAvailable()){
-      angle = Math.atan(limelight.getTargetOffsetY()/limelight.getDistance());
+      angle = (85 + limelight.getTargetOffsetY() - LimelightConstants.limelightMountAngleDegrees) % 90;
     }
     else {
       angle = ArmConstants.shootingAngle;
@@ -52,6 +53,6 @@ public class SetArmAngle extends Command {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return false;
+    return (Math.abs(arm.getAngle() - angle) < 5);
   }
 }
